@@ -1,3 +1,5 @@
+//this class is used to create objects for the records of data we are reading in from
+//
 package purpleAir2020;
 
 public class PurpleAirRecord {
