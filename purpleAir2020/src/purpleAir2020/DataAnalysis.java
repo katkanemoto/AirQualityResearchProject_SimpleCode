@@ -14,9 +14,9 @@ public class DataAnalysis {
 	public static void main(String[] args) {
 
 		//**change these names to the files you are using
-		String mesoWestData = "MPOC1.csv";
-		String purpleAirData = "mariposa_purpleAir2.csv";
-		String outputFile = "mariposaOutput.csv";
+		String mesoWestData = "TS623.csv";
+		String purpleAirData = "ShopFINAL.csv";
+		String outputFile = "2020_losBanosOutput_final.csv";
 		
 		Scanner input = null;
 		try {
@@ -106,33 +106,43 @@ public class DataAnalysis {
 					array.get(i).getDate().indexOf(' ') + 1, array.get(i).getDate().indexOf(' ') + 3);
 			for(int j = 0; j < hoursToLookFor.length; j++)
 				if(getHour.equals(hoursToLookFor[j])) {
-					//checking if the wind speed is 0, then use record after this one
+					//checking if the wind speed is 0, then use the Record after this one
 					//this also fixes the 0s in wind direction - since they are usually 0 together
-					int counter = 0;//check only 5 then get out of this loop
+					int counter = 0;//check only 5 then get out of this loop, if more than 5 0's it will just get a 0
 					while(array.get(i).getWindSpeed() == 0 && counter > 0) {
 						i++;
 						counter++;
 					}
 					arrayOfRecordsWeNeed.add(array.get(i));//add the first one
 					//now skip through all the rest with the same hour
-					while(getHour.equals(hoursToLookFor[j]))
-						getHour = array.get(++i).getDate().substring(
+					while(getHour.equals(hoursToLookFor[j])) {
+						i++;
+						if(i >= array.size())
+							break;
+						getHour = array.get(i).getDate().substring(
 							array.get(i).getDate().indexOf(' ') + 1, array.get(i).getDate().indexOf(' ') + 3);
+					}
 				}
 		}//end for
 		
 		//now add in the PurpleAirRecord
 		for(Record r: arrayOfRecordsWeNeed)
 			for(int i =0; i < purpleArray.size(); i++) {
-	
+				//System.out.println(r);
 				if(purpleArray.get(i).getMonth() == r.getMonth() && 
 						purpleArray.get(i).getDay() == r.getDay() && 
 						purpleArray.get(i).getHour() == r.getHour())  {
+					//setting the purpleAirRecord object for our Record to the first
+					//math of month, day, and hour that matches the MesoWest data that has already
+					//been set for that Record, which is month, day, year of Mesowest record inputted
 					//System.out.println("pmonth "+ pMonth + " rMonth " + rMonth + " pDay " + pDay + " rDay " + rDay);
 					r.setPurpleAirRecord(purpleArray.get(i));	
+					//Iterate through all of the rest of the matching records, to skip them
 					while(purpleArray.get(i).getHour() == r.getHour()) {
+						
 						i++;
 					}
+					break;
 				}	
 			}
 			
